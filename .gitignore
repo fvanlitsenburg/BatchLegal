@@ -6,4 +6,3 @@ raw_data/
 *.csv
 **/__pycache__/
 .env
-#api_jakob.ipynb
