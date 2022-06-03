@@ -5,6 +5,12 @@ from  PIL import Image
 import numpy as np
 import pandas as pd
 import plotly.figure_factory as ff
+import plotly.graph_objects as go
+import matplotlib.pyplot as plt
+import seaborn as sns
+import plotly.express as px
+import datetime
+
 
 # 1. Menu
 # 1.1 Sidebar menu
@@ -52,29 +58,125 @@ if selected == "Home":
 
 # random visualisations
 if selected == "Visualisations":
-    st.title(f"You have selected {selected}")
-    # st.bar_chart()
-    # Add histogram data
-    x1 = np.random.randn(200) - 2
-    x2 = np.random.randn(200)
-    x3 = np.random.randn(200) + 2
+    # st.title(f"You have selected {selected}")
+    # # st.bar_chart()
+    # # Add histogram data
+    # x1 = np.random.randn(200) - 2
+    # x2 = np.random.randn(200)
+    # x3 = np.random.randn(200) + 2
 
-    # Group data together
-    hist_data = [x1, x2, x3]
+    # # Group data together
+    # hist_data = [x1, x2, x3]
 
-    group_labels = ['Group 1', 'Group 2', 'Group 3']
+    # group_labels = ['Group 1', 'Group 2', 'Group 3']
 
-    # Create distplot with custom bin_size
-    fig = ff.create_distplot(
-            hist_data, group_labels, bin_size=[.1, .25, .5])
+    # # Create distplot with custom bin_size
+    # fig = ff.create_distplot(
+    #         hist_data, group_labels, bin_size=[.1, .25, .5])
 
-    # Plot!
-    st.plotly_chart(fig, use_container_width=True)
+    # # Plot!
+    # st.plotly_chart(fig, use_container_width=True)
+
+    filename = "../raw_data/20220602.csv"
+    data = pd.read_csv(filename).drop(columns = {'Unnamed: 0'})
+    data['date'] = pd.to_datetime(data['date'])
+    data = data[~data['dir_1'].isna()].reset_index().drop(columns = "index")
+
+    columns = st.columns(3)
+
+    d = columns[0].date_input("Please give us the start date", datetime.date(2011, 1, 1))
+    # columns[0].write(start_date)
+
+    e = columns[1].date_input("Please give us the end date", datetime.date(2022, 12, 31))
+    # columns[1].write(end_date)
+
+    time_selection = columns[2].selectbox('Publications per month or year?', ['Year', 'Month'])
+    # columns[2].write(location)
+
+    if time_selection == 'Year':
+        timesampling = "Y"
+    else:
+        timesampling = "M"
+
+
+    start_date = datetime.datetime.strptime(str(d), '%Y-%m-%d')
+    end_date = datetime.datetime.strptime(str(e), '%Y-%m-%d')
+    data_subset = data[np.logical_and(data['date'] >= start_date, data['date'] <= end_date)]
+    # uncomment this line if no time-subset is wanted
+    #data_subset = data
+    # select the sampling method
+
+    dir_1 = data['dir_1'].value_counts().index
+    df = data_subset[data_subset['dir_1'] == dir_1[0]].resample(timesampling, on='date')['title'].count().reset_index().rename(columns={'title':dir_1[0]})
+    for i in range(1,len(dir_1)):
+        category = dir_1[i]
+        temp = data_subset[data_subset['dir_1'] == category].resample(timesampling, on='date')['title'].count().reset_index().rename(columns={'title':category})
+        df = df.merge(temp, how='left', on='date').fillna(0)
+    data_publications = pd.concat([df['date'], df.drop(columns = "date").astype('Int64')], axis=1)
+
+    piedata = data_publications.drop(columns='date').sum().reset_index()
+    fig = px.pie(piedata, values=0, names='index', title='Topics of published documents')
+    #fig.update_layout(hovermode="x")
+    st.plotly_chart(fig)
+
+
+
+
+
+    # prepare data
+    x = data_publications['date'].tolist()
+    y = data_publications.drop(columns = {"date"}).T.values.tolist()
+    labels = data_publications.drop(columns = {"date"})
+    # create dict for the labels in plotly
+    newnames = {}
+    for index in range(0,len(labels.columns)):
+        newnames[f"wide_variable_{str(index)}"] = labels.columns[index]
+    # matplotlib
+    fig = plt.figure(figsize=(12,7))
+    plt.stackplot(x,y, labels=labels)
+    plt.legend()
+    plt.xlabel("Date of Publication")
+    plt.ylabel("Number of Publications")
+    plt.title(f"Publication of EU-Regulations per Topic (stacked)")
+    plt.show()
+    # plotly
+    x_plot = x.copy()
+    y_plot = y.copy()
+    fig = px.area(x=x_plot, y=y_plot,
+                labels={"x": "Date of Publication",
+                        "value": "Number of Publications",
+                        "variable": "Category"},
+                title='Publication of EU-Regulations per Topic (stacked)')
+    fig.for_each_trace(lambda t: t.update(name = newnames[t.name],
+                                        legendgroup = newnames[t.name],
+                                        hovertemplate = t.hovertemplate.replace(t.name, newnames[t.name])))
+    st.plotly_chart(fig)
+
+    # prepare data
+#normalize
+    df = data_publications.drop(columns = {'date'})
+    data_publications_normalized = df.div(df.sum(axis=1), axis=0)
+    y_norm = data_publications_normalized.T.values.tolist()
+    x_norm = x.copy() # see chapter above
+    labels = labels.copy() # see chapter above
+    newnames = newnames.copy() # dict for labels in plotly, see chapter above
+    # plotly
+    x_norm_plot = x_norm.copy()
+    y_norm_plot = y_norm.copy()
+    fig = px.area(x=x_norm_plot, y=y_norm_plot,
+                labels={"x": "Date of Publication",
+                        "value": "Share of Publications in this Topic",
+                        "variable": "Category"},
+                title='Publication of EU-Regulations per Topic (stacked and normalized)')
+    fig.for_each_trace(lambda t: t.update(name = newnames[t.name],
+                                        legendgroup = newnames[t.name],
+                                        hovertemplate = t.hovertemplate.replace(t.name, newnames[t.name])))
+    st.plotly_chart(fig)
 
 if selected == "Contact":
     st.title(f"You have selected {selected}")
-    st.write("Creators: ")
-    st.write("Axel Pichler")
-    st.write("Jakob Gübel")
-    st.write("Felix van Litsenburg")
-    st.write("Christopher Peter")
+    st.write("Creators: /n Axel Pichler Jakob Gübel")
+    # st.write("Axel Pichler")
+    # st.write("Jakob Gübel")
+    # st.write("Felix van Litsenburg")
+    # st.write("Christopher Peter")
