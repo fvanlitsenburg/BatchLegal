@@ -16,6 +16,8 @@ st.set_page_config(
     page_icon="⚖️",
     layout="wide"
 )
+#  title
+st.title("BatchLegal")
 # 1. Menu
 # 1.1 Sidebar menu
 # with st.sidebar:
@@ -100,11 +102,9 @@ if selected == "Visualisations":
     data_publications = pd.concat([df['date'], df.drop(columns = "date").astype('Int64')], axis=1)
 
     piedata = data_publications.drop(columns='date').sum().reset_index()
-    fig = px.pie(piedata, values=0, names='index', title='Topics of published documents')
+    fig1 = px.pie(piedata, values=0, names='index', title='Directories of published documents')
     #fig.update_layout(hovermode="x")
-    st.plotly_chart(fig)
-
-
+    # st.plotly_chart(fig)
 
 
 
@@ -117,7 +117,7 @@ if selected == "Visualisations":
     for index in range(0,len(labels.columns)):
         newnames[f"wide_variable_{str(index)}"] = labels.columns[index]
     # matplotlib
-    fig = plt.figure(figsize=(12,7))
+    fig2 = plt.figure(figsize=(12,7))
     plt.stackplot(x,y, labels=labels)
     plt.legend()
     plt.xlabel("Date of Publication")
@@ -127,15 +127,23 @@ if selected == "Visualisations":
     # plotly
     x_plot = x.copy()
     y_plot = y.copy()
-    fig = px.area(x=x_plot, y=y_plot,
+    fig2 = px.area(x=x_plot, y=y_plot,
                 labels={"x": "Date of Publication",
                         "value": "Number of Publications",
                         "variable": "Category"},
                 title='Publication of EU-Regulations per Topic (stacked)')
-    fig.for_each_trace(lambda t: t.update(name = newnames[t.name],
+    fig2.for_each_trace(lambda t: t.update(name = newnames[t.name],
                                         legendgroup = newnames[t.name],
                                         hovertemplate = t.hovertemplate.replace(t.name, newnames[t.name])))
-    st.plotly_chart(fig)
+    # st.plotly_chart(fig)
+
+    fig_col1, fig_col2 = st.columns(2)
+
+    with fig_col1:
+        st.plotly_chart(fig1)
+
+    with fig_col2:
+        st.plotly_chart(fig2)
 
     # prepare data
 #normalize
@@ -242,13 +250,13 @@ if selected == "Model Output":
     get_topic = data_axel['get_topics']
     # pick topic
     topiclist = data_axel['Sub_dir Name:'].tolist()
-    chosen_topic = st.selectbox('Select topic:', topiclist)
+    chosen_topic = st.selectbox('Select subdirectory:', topiclist)
     st.plotly_chart(bert_bar(topic_freq[topiclist.index(chosen_topic)], get_topic[topiclist.index(chosen_topic)]))
 
 
 if selected == "Contact":
     st.title(f"You have selected {selected}")
-    st.write("Creators: Axel Pichler Jakob Gübel ")
+    st.write("Creators: Axel Pichler, Jakob Gübel, Felix van Litsenburg, Christopher Peter")
     # st.write("Axel Pichler")
     # st.write("Jakob Gübel")
     # st.write("Felix van Litsenburg")
