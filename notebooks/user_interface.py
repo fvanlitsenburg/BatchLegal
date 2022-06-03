@@ -11,7 +11,11 @@ import seaborn as sns
 import plotly.express as px
 import datetime
 
-
+st.set_page_config(
+    page_title = "BatchLegal",
+    page_icon="⚖️",
+    layout="wide"
+)
 # 1. Menu
 # 1.1 Sidebar menu
 # with st.sidebar:
@@ -39,7 +43,7 @@ selected = option_menu(
         default_index=0,
         orientation="horizontal",
         styles={
-        "container": {"padding": "5!important", "background-color": "#fafafa"},
+        "container": {"width": "700px", "padding": "5!important", "background-color": "#fafafa"},
         "icon": {"color": "orange", "font-size": "25px"},
         "nav-link": {"font-size": "16px", "text-align": "left", "margin":"0px", "--hover-color": "#eee"},
         "nav-link-selected": {"background-color": "#02ab21"},
@@ -58,39 +62,20 @@ if selected == "Home":
 
 # random visualisations
 if selected == "Visualisations":
-    # st.title(f"You have selected {selected}")
-    # # st.bar_chart()
-    # # Add histogram data
-    # x1 = np.random.randn(200) - 2
-    # x2 = np.random.randn(200)
-    # x3 = np.random.randn(200) + 2
-
-    # # Group data together
-    # hist_data = [x1, x2, x3]
-
-    # group_labels = ['Group 1', 'Group 2', 'Group 3']
-
-    # # Create distplot with custom bin_size
-    # fig = ff.create_distplot(
-    #         hist_data, group_labels, bin_size=[.1, .25, .5])
-
-    # # Plot!
-    # st.plotly_chart(fig, use_container_width=True)
-
     filename = "../raw_data/20220602.csv"
     data = pd.read_csv(filename).drop(columns = {'Unnamed: 0'})
     data['date'] = pd.to_datetime(data['date'])
     data = data[~data['dir_1'].isna()].reset_index().drop(columns = "index")
 
-    columns = st.columns(3)
+    columns = st.columns((1,1,1))
 
-    d = columns[0].date_input("Please give us the start date", datetime.date(2011, 1, 1))
+    d = columns[0].date_input("Start date 🗓:", datetime.date(2011, 1, 1))
     # columns[0].write(start_date)
 
-    e = columns[1].date_input("Please give us the end date", datetime.date(2022, 12, 31))
+    e = columns[1].date_input("End date 📆:", datetime.date(2022, 12, 31))
     # columns[1].write(end_date)
 
-    time_selection = columns[2].selectbox('Publications per month or year?', ['Year', 'Month'])
+    time_selection = columns[2].selectbox('Per month or per year? ⌛️', ['Year', 'Month'])
     # columns[2].write(location)
 
     if time_selection == 'Year':
@@ -175,7 +160,7 @@ if selected == "Visualisations":
 
 if selected == "Contact":
     st.title(f"You have selected {selected}")
-    st.write("Creators: /n Axel Pichler Jakob Gübel")
+    st.write("Creators: Axel Pichler Jakob Gübel ")
     # st.write("Axel Pichler")
     # st.write("Jakob Gübel")
     # st.write("Felix van Litsenburg")
