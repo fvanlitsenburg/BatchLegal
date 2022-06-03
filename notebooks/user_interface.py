@@ -37,13 +37,13 @@ st.set_page_config(
 # 1.2 Horizontal menu bar
 selected = option_menu(
         menu_title = None,
-        options=['Home', 'Visualisations', 'Contact'],
-        icons=["house", "bar-chart-fill", "envelope"],
+        options=['Home', 'Visualisations', 'Model Output','Contact'],
+        icons=["house", "bar-chart-fill","bar-chart-fill", "envelope"],
         menu_icon="cast",
         default_index=0,
         orientation="horizontal",
         styles={
-        "container": {"width": "700px", "padding": "5!important", "background-color": "#fafafa"},
+        "container": {"width": "900px", "padding": "5!important", "background-color": "#fafafa"},
         "icon": {"color": "orange", "font-size": "25px"},
         "nav-link": {"font-size": "16px", "text-align": "left", "margin":"0px", "--hover-color": "#eee"},
         "nav-link-selected": {"background-color": "#02ab21"},
@@ -67,7 +67,7 @@ if selected == "Visualisations":
     data['date'] = pd.to_datetime(data['date'])
     data = data[~data['dir_1'].isna()].reset_index().drop(columns = "index")
 
-    columns = st.columns((1,1,1))
+    columns = st.columns(3)
 
     d = columns[0].date_input("Start date 🗓:", datetime.date(2011, 1, 1))
     # columns[0].write(start_date)
@@ -157,6 +157,94 @@ if selected == "Visualisations":
                                         legendgroup = newnames[t.name],
                                         hovertemplate = t.hovertemplate.replace(t.name, newnames[t.name])))
     st.plotly_chart(fig)
+
+
+
+import itertools
+import numpy as np
+from typing import List
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+
+if selected == "Model Output":
+
+    def bert_bar(topic_freq, get_topic,
+                topics: List[int] = None,
+                top_n_topics: int = 10,
+                n_words: int = 5,
+                width: int = 250,
+                height: int = 250) -> go.Figure:
+        colors = itertools.cycle(["#D55E00", "#0072B2", "#CC79A7", "#E69F00", "#56B4E9", "#009E73", "#F0E442"])
+        # Select topics based on top_n and topics args
+        freq_df = topic_freq
+        #freq_df = freq_df.loc[freq_df.Topic != -1, :]
+        if topics is not None:
+            topics = list(topics)
+        elif top_n_topics is not None:
+            topics = sorted(freq_df.Topic.to_list()[:top_n_topics])
+        else:
+            topics = sorted(freq_df.Topic.to_list()[0:6])
+        print(topics)
+        # Initialize figure
+        subplot_titles = [f"Topic {topic}" for topic in topics]
+        columns = 4
+        rows = int(np.ceil(len(topics) / columns))
+        fig = make_subplots(rows=rows,
+                        cols=columns,
+                        shared_xaxes=False,
+                        horizontal_spacing=.1,
+                        vertical_spacing=.4 / rows if rows > 1 else 0,
+                        subplot_titles=subplot_titles)
+        # Add barchart for each topic
+        row = 1
+        column = 1
+        for topic in topics:
+            words = [word + "  " for word, _ in get_topic[topic]][:n_words][::-1]
+            scores = [score for _, score in get_topic[topic]][:n_words][::-1]
+            fig.add_trace(
+                go.Bar(x=scores,
+                        y=words,
+                        orientation='h',
+                        marker_color=next(colors)),
+                row=row, col=column)
+            if column == columns:
+                column = 1
+                row += 1
+            else:
+                column += 1
+        # Stylize graph
+        fig.update_layout(
+            template="plotly_white",
+            showlegend=False,
+            title={
+                'text': "<b>Topic Word Scores",
+                'x': .5,
+                'xanchor': 'center',
+                'yanchor': 'top',
+                'font': dict(
+                    size=22,
+                    color="Black")
+            },
+            width=width*4,
+            height=height*rows if rows > 1 else height * 1.3,
+            hoverlabel=dict(
+            bgcolor="white",
+            font_size=16,
+            font_family="Rockwell"
+            ),
+        )
+        fig.update_xaxes(showgrid=True)
+        fig.update_yaxes(showgrid=True)
+        return fig
+
+    data_axel = pd.read_pickle("../raw_data/sub_dir_topics_axel.pkl")
+    topic_freq = data_axel['get_topic_freq']
+    get_topic = data_axel['get_topics']
+    # pick topic
+    topiclist = data_axel['Sub_dir Name:'].tolist()
+    chosen_topic = st.selectbox('Select topic:', topiclist)
+    st.plotly_chart(bert_bar(topic_freq[topiclist.index(chosen_topic)], get_topic[topiclist.index(chosen_topic)]))
+
 
 if selected == "Contact":
     st.title(f"You have selected {selected}")
