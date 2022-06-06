@@ -56,9 +56,24 @@ selected = option_menu(
 if selected == "Home":
     # st.title(f"You have selected {selected} directory.")
     st.markdown('''
-            Wondering what is going with EU regulations?
-            **BatchLegal** will give you an overview! _Cool_?
+            # Wondering what is going within EU regulations?  \n
+            ## Our App **BatchLegal** will give you an overview! _Cool_? ✅  \n
+            ### With the help of the following 2️⃣ topic modelling algorithms we are able to grasp the most important topics of legal texts.
             ''')
+    st.markdown('''
+            ## LDA: Latent Dirichlet Allocation ❓\n
+            🔘 "Latent" = hidden (topics)  \n
+            🔘 "Dirichlet" = type of probability distribution  \n
+            🔘 Unsupervised algorithm to find topics in documents
+            ''')
+    st.markdown('''
+            ## BERTopic ❓ \n
+            🔘 leverages transformers and c-TF-IDF to create dense clusters  \n
+            🔘 allows for easily interpretable topics  \n
+            🔘 keeping important words in the topic descriptions.  \n
+            # 🏁
+            ''')
+
     input_keywords = st.text_input("", placeholder = "Please type in your keyword...")
     st.write(f'**{input_keywords}**')
 
