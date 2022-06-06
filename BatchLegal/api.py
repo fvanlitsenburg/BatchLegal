@@ -4,13 +4,18 @@ import requests
 import math
 import time
 from xml.etree import ElementTree as et
+from dotenv import load_dotenv, find_dotenv
+import os
 
+env_path = find_dotenv()
+
+load_dotenv(env_path)
 
 URL = 'https://eur-lex.europa.eu/EURLexWebService'
 
-username = 'n00a1zjc'
+username = os.getenv('API_USERNAME')
 
-passwrd = 'h1iouDqcN5H'
+passwrd = os.getenv('API_PASSWORD')
 
 '''
 This Python script queries the EURLexWebservice. To use it yourself, you need to request a username and password. This can be done here:
@@ -20,7 +25,7 @@ This package uses a two-step process to obtain the data from the EUR-Lex webserv
 
 Cellar is the repository of the content for documents. More information: https://eur-lex.europa.eu/content/help/data-reuse/reuse-contents-eurlex-details.html
 
-In the package "scraping" we then use the Cellar references to attach
+In the package "scraping" we then use the Cellar references to attach the text content to each document
 
 '''
 
@@ -154,3 +159,18 @@ def parse_xml(request):
         return pd_dict
     else:
         pass
+
+def generate_meta(start_year=2010,end_year=2022):
+    '''
+    Returns a dataframe of metadata, as well as a list of requests.
+
+    Parameters:
+    start_year: start year of the request
+    end_year: end year of the request
+    '''
+    requester = full_request(start_year,end_year)
+    df = pd.DataFrame(parse_xml(requester[0]))
+    for i in requester[1:]:
+        tempdf = pd.DataFrame(parse_xml(i))
+        df = pd.concat([df,tempdf])
+    return df,requester
