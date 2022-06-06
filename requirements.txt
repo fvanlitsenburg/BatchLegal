@@ -13,7 +13,6 @@ requests
 beautifulsoup4
 datetime
 python-dotenv
-itertools
 typing.List
 scipy.cluster.hierarchy
 sklearn.metrics.pairwise
