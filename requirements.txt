@@ -7,3 +7,9 @@ pandas
 matplotlib
 seaborn
 scikit-learn
+spacy
+streamlit
+requests
+beautifulsoup4
+datetime
+python-dotenv
