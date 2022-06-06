@@ -53,3 +53,7 @@ pypi_test:
 
 pypi:
 	@twine upload dist/* -u $(PYPI_USERNAME)
+
+deploy heroku:
+	@heroku ps:scale web=1
+	git push heroku master
