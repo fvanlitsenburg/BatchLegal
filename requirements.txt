@@ -13,3 +13,4 @@ requests
 beautifulsoup4
 datetime
 python-dotenv
+
