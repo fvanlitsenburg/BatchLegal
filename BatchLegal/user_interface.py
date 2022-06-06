@@ -57,20 +57,20 @@ if selected == "Home":
     # st.title(f"You have selected {selected} directory.")
     st.markdown('''
             # Wondering what is going within EU regulations?  \n
-            ## Our App **BatchLegal** will give you an overview! _Cool_? ✅
+            ## Our App **BatchLegal** will give you an overview! _Cool_? ✅  \n
+            ### With the help of the following 2️⃣ topic modelling algorithms we are able to grasp the most important topics of legal texts.
             ''')
     st.markdown('''
-            With the help of unsupervised topic modelling we are able to grasp the most important topics of legal texts.
-            ''')
-    st.markdown('''
-            ## LDA ❓\n
+            ## LDA: Latent Dirichlet Allocation ❓\n
             🔘 "Latent" = hidden (topics)  \n
-            🔘 "Dirichlet" = type of probability distribution
+            🔘 "Dirichlet" = type of probability distribution  \n
+            🔘 Unsupervised algorithm to find topics in documents
             ''')
     st.markdown('''
             ## BERTopic ❓ \n
             🔘 leverages transformers and c-TF-IDF to create dense clusters  \n
-            🔘 allows for easily interpretable topics whilst keeping important words in the topic descriptions.  \n
+            🔘 allows for easily interpretable topics  \n
+            🔘 keeping important words in the topic descriptions.  \n
             # 🏁
             ''')
 
