@@ -86,6 +86,45 @@ def get_all_content(data):
         print(f'Row {index} with cellar-number {ref} done')
     return data
 
+def get_all_content_with_splitting(data, batchsize=500, path ="../raw_data/", filename_without_csv="20220602"):
+    '''
+    OPTIONAL! loops over the functions to get all content. for more than 500 files the process will be split up
+    '''
+    if len(data) > batchsize:
+        remaining = len(data) % batchsize
+        iterations = int((len(data)-remaining) / batchsize)
+        for batch in range(0,iterations):
+            tmp = data.iloc[batch*batchsize:(batch+1)*batchsize]
+            cellar_references = tmp['cellar'] 
+            for index, ref in enumerate(cellar_references):
+                tmp.loc[index, 'Content'] = get_content(get_url(ref))
+                print(f'Row {index} from batch {batch} with cellar-number {ref} done')
+                tmp.to_csv(f"{path}{filename_without_csv}_tmp_batch{batch}.csv")
+        # add remaining rows
+        #return "partitioned data can be found in '../raw_data/'
+    else:
+        cellar_references = data['cellar']    
+        for index, ref in enumerate(cellar_references):
+            data.loc[index, 'Content'] = get_content(get_url(ref))
+            print(f'Row {index} with cellar-number {ref} done')
+        return data
+
+def process_content_after_splitting(
+    '''
+    OPTIONAL! Only after getting the content in split form
+    '''
+    data_full = pd.read_csv("../raw_data/tmp/20220602_tmp_batch0.csv")
+    liste = list(np.arange(1,15)) # number+1 of tmp-dataframes, minus the first one
+    for i in liste:
+        data_tmp = pd.read_csv(f"../raw_data/tmp/20220602_tmp_batch{i}.csv")
+        data_tmp['Content'].iloc[0:499] = data_tmp['Content'].iloc[500:999].reset_index()['Content']
+        data_tmp = data_tmp.drop(list(np.arange(500,1000)))
+        data_full = data_full.append(data_tmp)
+    data_full = data_full.reset_index().drop(columns = ['Unnamed: 0.1', 'Unnamed: 0', 'index'])
+    data_full = clean_data(data_full)
+    return data_full.drop_duplicates(subset=['Content'])
+
+    
 if __name__ == '__main__':
     # try reading metadata file, if non-existant request it from api.py
     path = "../raw_data/"
