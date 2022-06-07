@@ -151,14 +151,15 @@ if selected == "Model Output":
     topics_dir1_df = pd.read_pickle(path_top)
     url_emb = "https://drive.google.com/file/d/1dG5nxr_lLuFjjLtYu8hki9Im6PK91XR-/view?usp=sharing"
     path_emb = "https://drive.google.com/uc?export=download&id="+url_emb.split('/')[-2]
-    with open(path_emb, 'rb') as handle:
-        embeddings_lst = pickle.load(handle)
+    embeddings_lst = pd.read_pickle(path_emb)
+    # with open(path_emb, 'rb') as handle:
+    #     embeddings_lst = pickle.load(handle)
 
     url_dist = "https://drive.google.com/file/d/1uAQKY7ovlqGRl1Zobd_GNdrXPR9aQkZO/view?usp=sharing"
     path_dist = "https://drive.google.com/uc?export=download&id="+url_dist.split('/')[-2]
-
-    with open(path_dist, 'rb') as handle:
-        distances_lst = pickle.load(handle)
+    distances_lst = pd.read_pickle(path_dist)
+    # with open(path_dist, 'rb') as handle:
+    #     distances_lst = pickle.load(handle)
 
 
     topic_list = topics_dir1_df['Sub_dir Name:'].tolist()
