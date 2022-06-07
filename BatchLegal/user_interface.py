@@ -11,6 +11,8 @@ import seaborn as sns
 import plotly.express as px
 import datetime
 
+from BatchLegal.visualization_descriptive import *
+
 st.set_page_config(
     page_title = "BatchLegal",
     page_icon="⚖️",
@@ -52,7 +54,6 @@ selected = option_menu(
     },
     )
 
-
 if selected == "Home":
     # st.title(f"You have selected {selected} directory.")
     st.markdown('''
@@ -77,196 +78,101 @@ if selected == "Home":
     input_keywords = st.text_input("", placeholder = "Please type in your keyword...")
     st.write(f'**{input_keywords}**')
 
-# random visualisations
+# descriptive visualization of metadata
 if selected == "Visualisations":
     filename = "../raw_data/20220602.csv"
-    data = pd.read_csv(filename).drop(columns = {'Unnamed: 0'})
-    data['date'] = pd.to_datetime(data['date'])
-    data = data[~data['dir_1'].isna()].reset_index().drop(columns = "index")
+    data = load_metadata_for_vis(filename)
 
+    # call function to display the top layer directories
+    dir_1 = exploration_list_subdirs(data, dir_1=None, dir_2=None)
+    # user input directory-level and keyword
+    columns = st.columns(2)
+    dir_1_selection = columns[0].selectbox('Select main directory', ["No Selection"] + dir_1)
+    # call function again based on input
+    dir_2 = exploration_list_subdirs(data, dir_1=dir_1_selection, dir_2=None)
+    # user input for second layer directories
+    dir_2_selection = columns[1].selectbox('Select sub-directory', ["No Selection"] + dir_2)
+
+    # select timeframe and sampling method
     columns = st.columns(3)
-
-    d = columns[0].date_input("Start date 🗓:", datetime.date(2011, 1, 1))
+    start_date = columns[0].date_input("Start date 🗓:", datetime.date(2011, 1, 1))
     # columns[0].write(start_date)
-
-    e = columns[1].date_input("End date 📆:", datetime.date(2022, 12, 31))
+    end_date = columns[1].date_input("End date 📆:", datetime.date(2022, 12, 31))
     # columns[1].write(end_date)
-
     time_selection = columns[2].selectbox('Per month or per year? ⌛️', ['Year', 'Month'])
     # columns[2].write(location)
-
     if time_selection == 'Year':
         timesampling = "Y"
     else:
         timesampling = "M"
 
+    # case when no directories are selected:
+    if np.logical_and(dir_1_selection == "No Selection", dir_2_selection == "No Selection"):
+        data_subset, dirlevel = subset_data_subdirs(data, dir_1=None, dir_2=None, dir_3=None)
+    # case when only dir 1 selected:
+    elif np.logical_and(dir_1_selection != "No Selection", dir_2_selection == "No Selection"):
+        data_subset, dirlevel = subset_data_subdirs(data, dir_1=dir_1_selection, dir_2=None, dir_3=None)
+    # case when dir 1 and dir 2 selected:
+    elif np.logical_and(dir_1_selection != "No Selection", dir_2_selection != "No Selection"):
+        data_subset, dirlevel = subset_data_subdirs(data, dir_1=dir_1_selection, dir_2=dir_2_selection, dir_3=None)
 
-    start_date = datetime.datetime.strptime(str(d), '%Y-%m-%d')
-    end_date = datetime.datetime.strptime(str(e), '%Y-%m-%d')
-    data_subset = data[np.logical_and(data['date'] >= start_date, data['date'] <= end_date)]
-    # uncomment this line if no time-subset is wanted
-    #data_subset = data
-    # select the sampling method
-
-    dir_1 = data['dir_1'].value_counts().index
-    df = data_subset[data_subset['dir_1'] == dir_1[0]].resample(timesampling, on='date')['title'].count().reset_index().rename(columns={'title':dir_1[0]})
-    for i in range(1,len(dir_1)):
-        category = dir_1[i]
-        temp = data_subset[data_subset['dir_1'] == category].resample(timesampling, on='date')['title'].count().reset_index().rename(columns={'title':category})
-        df = df.merge(temp, how='left', on='date').fillna(0)
-    data_publications = pd.concat([df['date'], df.drop(columns = "date").astype('Int64')], axis=1)
-
-    piedata = data_publications.drop(columns='date').sum().reset_index()
-    fig1 = px.pie(piedata, values=0, names='index', title='Directories of published documents')
-    #fig.update_layout(hovermode="x")
-    # st.plotly_chart(fig)
+    # subsetting for time
+    data_subset_time = subset_data(data_subset, start_date=str(start_date), end_date=str(end_date), timesampling=timesampling, directory_level=dirlevel)
 
 
+    fig1 = visualization_piechart(data_subset_time)
+    st.plotly_chart(fig1)
 
-    # prepare data
-    x = data_publications['date'].tolist()
-    y = data_publications.drop(columns = {"date"}).T.values.tolist()
-    labels = data_publications.drop(columns = {"date"})
-    # create dict for the labels in plotly
-    newnames = {}
-    for index in range(0,len(labels.columns)):
-        newnames[f"wide_variable_{str(index)}"] = labels.columns[index]
-    # matplotlib
-    fig2 = plt.figure(figsize=(12,7))
-    plt.stackplot(x,y, labels=labels)
-    plt.legend()
-    plt.xlabel("Date of Publication")
-    plt.ylabel("Number of Publications")
-    plt.title(f"Publication of EU-Regulations per Topic (stacked)")
-    plt.show()
-    # plotly
-    x_plot = x.copy()
-    y_plot = y.copy()
-    fig2 = px.area(x=x_plot, y=y_plot,
-                labels={"x": "Date of Publication",
-                        "value": "Number of Publications",
-                        "variable": "Category"},
-                title='Publication of EU-Regulations per Topic (stacked)')
-    fig2.for_each_trace(lambda t: t.update(name = newnames[t.name],
-                                        legendgroup = newnames[t.name],
-                                        hovertemplate = t.hovertemplate.replace(t.name, newnames[t.name])))
-    # st.plotly_chart(fig)
-
+    fig2 = visualization_stackedarea(data_subset_time, plottype="plotly")
+    st.plotly_chart(fig2)
+    '''
     fig_col1, fig_col2 = st.columns(2)
-
     with fig_col1:
         st.plotly_chart(fig1)
-
     with fig_col2:
         st.plotly_chart(fig2)
-
-    # prepare data
-#normalize
-    df = data_publications.drop(columns = {'date'})
-    data_publications_normalized = df.div(df.sum(axis=1), axis=0)
-    y_norm = data_publications_normalized.T.values.tolist()
-    x_norm = x.copy() # see chapter above
-    labels = labels.copy() # see chapter above
-    newnames = newnames.copy() # dict for labels in plotly, see chapter above
-    # plotly
-    x_norm_plot = x_norm.copy()
-    y_norm_plot = y_norm.copy()
-    fig = px.area(x=x_norm_plot, y=y_norm_plot,
-                labels={"x": "Date of Publication",
-                        "value": "Share of Publications in this Topic",
-                        "variable": "Category"},
-                title='Publication of EU-Regulations per Topic (stacked and normalized)')
-    fig.for_each_trace(lambda t: t.update(name = newnames[t.name],
-                                        legendgroup = newnames[t.name],
-                                        hovertemplate = t.hovertemplate.replace(t.name, newnames[t.name])))
-    st.plotly_chart(fig)
+    '''
+    fig3 = visualization_stackedarea_normalized(data_subset_time, plottype="plotly")
+    st.plotly_chart(fig3)
 
 
 
 import itertools
-import numpy as np
 from typing import List
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 if selected == "Model Output":
 
-    def bert_bar(topic_freq, get_topic,
-                topics: List[int] = None,
-                top_n_topics: int = 10,
-                n_words: int = 5,
-                width: int = 250,
-                height: int = 250) -> go.Figure:
-        colors = itertools.cycle(["#D55E00", "#0072B2", "#CC79A7", "#E69F00", "#56B4E9", "#009E73", "#F0E442"])
-        # Select topics based on top_n and topics args
-        freq_df = topic_freq
-        #freq_df = freq_df.loc[freq_df.Topic != -1, :]
-        if topics is not None:
-            topics = list(topics)
-        elif top_n_topics is not None:
-            topics = sorted(freq_df.Topic.to_list()[:top_n_topics])
-        else:
-            topics = sorted(freq_df.Topic.to_list()[0:6])
-        print(topics)
-        # Initialize figure
-        subplot_titles = [f"Topic {topic}" for topic in topics]
-        columns = 4
-        rows = int(np.ceil(len(topics) / columns))
-        fig = make_subplots(rows=rows,
-                        cols=columns,
-                        shared_xaxes=False,
-                        horizontal_spacing=.1,
-                        vertical_spacing=.4 / rows if rows > 1 else 0,
-                        subplot_titles=subplot_titles)
-        # Add barchart for each topic
-        row = 1
-        column = 1
-        for topic in topics:
-            words = [word + "  " for word, _ in get_topic[topic]][:n_words][::-1]
-            scores = [score for _, score in get_topic[topic]][:n_words][::-1]
-            fig.add_trace(
-                go.Bar(x=scores,
-                        y=words,
-                        orientation='h',
-                        marker_color=next(colors)),
-                row=row, col=column)
-            if column == columns:
-                column = 1
-                row += 1
-            else:
-                column += 1
-        # Stylize graph
-        fig.update_layout(
-            template="plotly_white",
-            showlegend=False,
-            title={
-                'text': "<b>Topic Word Scores",
-                'x': .5,
-                'xanchor': 'center',
-                'yanchor': 'top',
-                'font': dict(
-                    size=22,
-                    color="Black")
-            },
-            width=width*4,
-            height=height*rows if rows > 1 else height * 1.3,
-            hoverlabel=dict(
-            bgcolor="white",
-            font_size=16,
-            font_family="Rockwell"
-            ),
-        )
-        fig.update_xaxes(showgrid=True)
-        fig.update_yaxes(showgrid=True)
-        return fig
 
-    data_axel = pd.read_pickle("../raw_data/sub_dir_topics_axel.pkl")
-    topic_freq = data_axel['get_topic_freq']
-    get_topic = data_axel['get_topics']
+
+    topics_dir1_df = pd.read_pickle('../raw_data/topics_dir1_df.pkl')
+    with open('../raw_data/embeddings_dir1.pkl', 'rb') as handle:
+        embeddings_lst = pickle.load(handle)
+    with open('../raw_data/distances_dir1.pkl', 'rb') as handle:
+        distances_lst = pickle.load(handle)
+
+
+    topic_list = topics_dir1_df['Sub_dir Name:'].tolist()
     # pick topic
-    topiclist = data_axel['Sub_dir Name:'].tolist()
-    chosen_topic = st.selectbox('Select subdirectory:', topiclist)
-    st.plotly_chart(bert_bar(topic_freq[topiclist.index(chosen_topic)], get_topic[topiclist.index(chosen_topic)]))
+    theme = st.selectbox('Select subdirectory:', topic_list)
+
+    topic_list_index = topic_list.index(theme)
+    topic_freq = topics_dir1_df.iloc[topic_list_index]['get_topic_freq']
+    get_topic = topics_dir1_df.iloc[topic_list_index]['get_topic']
+    topic_sizes = topics_dir1_df.iloc[topic_list_index]['topic_sizes']
+
+
+    st.plotly_chart(bert_bar(topic_freq, get_topic))
+
+
+
+
+
+
+
+
+
 
 
 if selected == "Contact":
