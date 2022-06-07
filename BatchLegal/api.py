@@ -25,7 +25,7 @@ This package uses a two-step process to obtain the data from the EUR-Lex webserv
 
 Cellar is the repository of the content for documents. More information: https://eur-lex.europa.eu/content/help/data-reuse/reuse-contents-eurlex-details.html
 
-In the package "scraping" we then use the Cellar references to attach the text content to each document
+In the package "scraping" we then use the Cellar references to attach the text content to each document.
 
 '''
 
