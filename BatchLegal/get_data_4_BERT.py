@@ -1,5 +1,11 @@
+#Install
+#!python -m spacy download en_core_web_sm
+#!pip install spacy-lookups-data
+#!pip install bertopic
+
 #Imports
 
+import numpy as np
 import pandas as pd
 import string
 import nltk
@@ -14,6 +20,8 @@ from bertopic import BERTopic #BERTtopic-model: https://github.com/MaartenGr/BER
 from umap import UMAP
 from typing import List
 from sklearn.preprocessing import MinMaxScaler
+from sklearn.metrics.pairwise import cosine_similarity
+
 
 #Functions
 
@@ -68,7 +76,8 @@ def model_to_figure(data, dir, name):
     txt = txt.tolist()
 
     #Training model
-    model = BERTopic(language="english", calculate_probabilities=True, verbose=True)
+    umap_model = UMAP(init='random')
+    model = BERTopic(umap_model=umap_model, language="english", calculate_probabilities=True, verbose=True)
     topics, probs = model.fit_transform(txt)
 
     #Building Dict
