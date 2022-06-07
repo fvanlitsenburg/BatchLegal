@@ -70,6 +70,7 @@ if selected == "Home":
             ''')
     st.markdown('''
             ## BERTopic ❓ \n
+            https://maartengr.github.io/BERTopic/ \n
             🔘 leverages transformers and c-TF-IDF to create dense clusters  \n
             🔘 allows for easily interpretable topics  \n
             🔘 keeping important words in the topic descriptions.  \n
