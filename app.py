@@ -21,23 +21,6 @@ st.set_page_config(
 )
 #  title
 st.title("BatchLegal")
-# 1. Menu
-# 1.1 Sidebar menu
-# with st.sidebar:
-#     selected = option_menu(
-#         menu_title = None,
-#         options=['Home', 'Visualisations', 'Contact'],
-#         icons=["house", "bar-chart-fill", "envelope"],
-#         menu_icon="cast",
-#         default_index=0,
-#         # orientation="horizontal",
-#         styles={
-#         "container": {"padding": "5!important", "background-color": "#fafafa"},
-#         "icon": {"color": "orange", "font-size": "25px"},
-#         "nav-link": {"font-size": "16px", "text-align": "left", "margin":"0px", "--hover-color": "#eee"},
-#         "nav-link-selected": {"background-color": "#02ab21"},
-#     },
-#     )
 
 # 1.2 Horizontal menu bar
 selected = option_menu(
@@ -60,7 +43,7 @@ if selected == "Home":
     st.markdown('''
             # Wondering what is going within EU regulations?  \n
             ## Our App **BatchLegal** will give you an overview! _Cool_? ✅  \n
-            ### With the help of the following 2️⃣ topic modelling algorithms we are able to grasp the most important topics of legal texts.
+            With the help of the following 2️⃣ topic modelling algorithms we are able to grasp the most important topics of legal texts.
             ''')
     st.markdown('''
             ## LDA: Latent Dirichlet Allocation ❓\n
@@ -76,8 +59,8 @@ if selected == "Home":
             # 🏁
             ''')
 
-    input_keywords = st.text_input("", placeholder = "Please type in your keyword...")
-    st.write(f'**{input_keywords}**')
+    # input_keywords = st.text_input("", placeholder = "Please type in your keyword...")
+    # st.write(f'**{input_keywords}**')
 
 # descriptive visualization of metadata
 if selected == "Visualisations":
@@ -139,13 +122,9 @@ import itertools
 from typing import List
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-
 from BatchLegal.bert_viz import *
 
 if selected == "Model Output":
-
-
-
     url_top = "https://drive.google.com/file/d/1DLVflFOzf30kOKzNiktVSCrCnY5EmlNm/view?usp=sharing"
     path_top = 'https://drive.google.com/uc?export=download&id='+url_top.split('/')[-2]
     topics_dir1_df = pd.read_pickle(path_top)
@@ -188,11 +167,9 @@ if selected == "Model Output":
         st.plotly_chart(visualize_hierarchy(topic_freq, get_topic, distances_lst[topic_list_index][dist]))
 
 
-
-
 if selected == "Contact":
     st.title(f"You have selected {selected}")
-    st.write("Creators: Axel Pichler, Jakob Gübel, Felix van Litsenburg, Christopher Peter")
+    st.write("Creators:  \n Axel Pichler,  \n Jakob Gübel,  \n Felix van Litsenburg,  \n Christopher Peter")
     # st.write("Axel Pichler")
     # st.write("Jakob Gübel")
     # st.write("Felix van Litsenburg")
