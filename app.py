@@ -129,13 +129,7 @@ if selected == "Visualisations":
 
     fig2 = visualization_stackedarea(data_subset_time, plottype="plotly")
     st.plotly_chart(fig2)
-    '''
-    fig_col1, fig_col2 = st.columns(2)
-    with fig_col1:
-        st.plotly_chart(fig1)
-    with fig_col2:
-        st.plotly_chart(fig2)
-    '''
+
     fig3 = visualization_stackedarea_normalized(data_subset_time, plottype="plotly")
     st.plotly_chart(fig3)
 
@@ -152,10 +146,18 @@ if selected == "Model Output":
 
 
 
-    topics_dir1_df = pd.read_pickle('../raw_data/topics_dir1_df.pkl')
-    with open('../raw_data/embeddings_dir1.pkl', 'rb') as handle:
+    url_top = "https://drive.google.com/file/d/1DLVflFOzf30kOKzNiktVSCrCnY5EmlNm/view?usp=sharing"
+    path_top = 'https://drive.google.com/uc?export=download&id='+url_top.split('/')[-2]
+    topics_dir1_df = pd.read_pickle(path_top)
+    url_emb = "https://drive.google.com/file/d/1dG5nxr_lLuFjjLtYu8hki9Im6PK91XR-/view?usp=sharing"
+    path_emb = "https://drive.google.com/uc?export=download&id="+url_emb.split('/')[-2]
+    with open(path_emb, 'rb') as handle:
         embeddings_lst = pickle.load(handle)
-    with open('../raw_data/distances_dir1.pkl', 'rb') as handle:
+
+    url_dist = "https://drive.google.com/file/d/1uAQKY7ovlqGRl1Zobd_GNdrXPR9aQkZO/view?usp=sharing"
+    path_dist = "https://drive.google.com/uc?export=download&id="+url_dist.split('/')[-2]
+
+    with open(path_dist, 'rb') as handle:
         distances_lst = pickle.load(handle)
 
 
@@ -183,13 +185,6 @@ if selected == "Model Output":
     else:
         st.plotly_chart(visualize_topics(topic_freq, topic_sizes, get_topic, embeddings_lst[topic_list_index][embeds]))
         st.plotly_chart(visualize_hierarchy(topic_freq, get_topic, distances_lst[topic_list_index][dist]))
-
-
-
-
-
-
-
 
 
 
