@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import plotly.express as px
 import datetime
+import pickle
 
 from BatchLegal.visualization_descriptive import *
 
@@ -142,6 +143,8 @@ from typing import List
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
+from BatchLegal.bert_viz import *
+
 if selected == "Model Output":
 
 
@@ -157,13 +160,26 @@ if selected == "Model Output":
     # pick topic
     theme = st.selectbox('Select subdirectory:', topic_list)
 
+    temp = theme.split(' ')
+    temp = temp[0].replace(',', '')
+    embeds = temp+'_embeds'
+    dist = temp+'_dist'
+
     topic_list_index = topic_list.index(theme)
-    topic_freq = topics_dir1_df.iloc[topic_list_index]['get_topic_freq']
+    topic_freq = topics_dir1_df.iloc[topic_list_index]['topic_freq']
     get_topic = topics_dir1_df.iloc[topic_list_index]['get_topic']
     topic_sizes = topics_dir1_df.iloc[topic_list_index]['topic_sizes']
 
 
+
     st.plotly_chart(bert_bar(topic_freq, get_topic))
+
+
+    if len(embeddings_lst[topic_list_index][embeds]) == 0:
+        st.write("Not enough topics to visualize")
+    else:
+        st.plotly_chart(visualize_topics(topic_freq, topic_sizes, get_topic, embeddings_lst[topic_list_index][embeds]))
+        st.plotly_chart(visualize_hierarchy(topic_freq, get_topic, distances_lst[topic_list_index][dist]))
 
 
 
