@@ -70,6 +70,7 @@ if selected == "Home":
             ''')
     st.markdown('''
             ## BERTopic ❓ \n
+            https://maartengr.github.io/BERTopic/ \n
             🔘 leverages transformers and c-TF-IDF to create dense clusters  \n
             🔘 allows for easily interpretable topics  \n
             🔘 keeping important words in the topic descriptions.  \n
@@ -126,13 +127,7 @@ if selected == "Visualisations":
 
     fig2 = visualization_stackedarea(data_subset_time, plottype="plotly")
     st.plotly_chart(fig2)
-    '''
-    fig_col1, fig_col2 = st.columns(2)
-    with fig_col1:
-        st.plotly_chart(fig1)
-    with fig_col2:
-        st.plotly_chart(fig2)
-    '''
+
     fig3 = visualization_stackedarea_normalized(data_subset_time, plottype="plotly")
     st.plotly_chart(fig3)
 
@@ -147,14 +142,9 @@ from BatchLegal.bert_viz import *
 
 if selected == "Model Output":
 
-
-
     topics_dir1_df = pd.read_pickle('../raw_data/topics_dir1_df.pkl')
-    with open('../raw_data/embeddings_dir1.pkl', 'rb') as handle:
-        embeddings_lst = pickle.load(handle)
-    with open('../raw_data/distances_dir1.pkl', 'rb') as handle:
-        distances_lst = pickle.load(handle)
-
+    embeddings_lst = pd.read_pickle('../raw_data/embeddings_dir1.pkl')
+    distances_lst = pd.read_pickle('../raw_data/distances_dir1.pkl')
 
     topic_list = topics_dir1_df['Sub_dir Name:'].tolist()
     # pick topic
@@ -170,16 +160,13 @@ if selected == "Model Output":
     get_topic = topics_dir1_df.iloc[topic_list_index]['get_topic']
     topic_sizes = topics_dir1_df.iloc[topic_list_index]['topic_sizes']
 
-
-
     st.plotly_chart(bert_bar(topic_freq, get_topic))
 
-
-    if len(embeddings_lst[topic_list_index][embeds]) == 0:
-        st.write("Not enough topics to visualize")
-    else:
+    try:
         st.plotly_chart(visualize_topics(topic_freq, topic_sizes, get_topic, embeddings_lst[topic_list_index][embeds]))
         st.plotly_chart(visualize_hierarchy(topic_freq, get_topic, distances_lst[topic_list_index][dist]))
+    except:
+        st.write("Not enough topics to visualize")
 
 
 
