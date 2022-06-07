@@ -46,21 +46,12 @@ if selected == "Home":
             With the help of the following 2️⃣ topic modelling algorithms we are able to grasp the most important topics of legal texts.
             ''')
     st.markdown('''
-            ## LDA: Latent Dirichlet Allocation ❓\n
-            🔘 "Latent" = hidden (topics)  \n
-            🔘 "Dirichlet" = type of probability distribution  \n
-            🔘 Unsupervised algorithm to find topics in documents
-            ''')
-    st.markdown('''
             ## BERTopic ❓ \n
             🔘 leverages transformers and c-TF-IDF to create dense clusters  \n
             🔘 allows for easily interpretable topics  \n
             🔘 keeping important words in the topic descriptions.  \n
             # 🏁
             ''')
-
-    # input_keywords = st.text_input("", placeholder = "Please type in your keyword...")
-    # st.write(f'**{input_keywords}**')
 
 # descriptive visualization of metadata
 if selected == "Visualisations":
@@ -168,9 +159,5 @@ if selected == "Model Output":
 
 
 if selected == "Contact":
-    st.title(f"You have selected {selected}")
-    st.write("Creators:  \n Axel Pichler,  \n Jakob Gübel,  \n Felix van Litsenburg,  \n Christopher Peter")
-    # st.write("Axel Pichler")
-    # st.write("Jakob Gübel")
-    # st.write("Felix van Litsenburg")
-    # st.write("Christopher Peter")
+    st.title(selected)
+    st.write("Creators:  \n Axel Pichler  \n Jakob Gübel  \n Felix van Litsenburg  \n Christopher Peter")
