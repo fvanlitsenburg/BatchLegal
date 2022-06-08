@@ -6,13 +6,24 @@ import numpy as np
 import pandas as pd
 import plotly.figure_factory as ff
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 import matplotlib.pyplot as plt
 import seaborn as sns
 import plotly.express as px
 import datetime
 import pickle
+import itertools
+from typing import List
+
 
 from BatchLegal.visualization_descriptive import *
+filename = "../raw_data/20220602.csv"
+data = load_metadata_for_vis(filename)
+
+from BatchLegal.bert_viz import *
+topics_dir1_df = pd.read_pickle('../raw_data/topics_dir2_df.pkl')
+embeddings_lst = pd.read_pickle('../raw_data/embeddings_dir2.pkl')
+distances_lst = pd.read_pickle('../raw_data/distances_dir2.pkl')
 
 st.set_page_config(
     page_title = "BatchLegal",
@@ -82,9 +93,6 @@ if selected == "Home":
 
 # descriptive visualization of metadata
 if selected == "Visualisations":
-    filename = "../raw_data/20220602.csv"
-    data = load_metadata_for_vis(filename)
-
     # call function to display the top layer directories
     dir_1 = exploration_list_subdirs(data, dir_1=None, dir_2=None)
     # user input directory-level and keyword
@@ -121,32 +129,18 @@ if selected == "Visualisations":
     # subsetting for time
     data_subset_time = subset_data(data_subset, start_date=str(start_date), end_date=str(end_date), timesampling=timesampling, directory_level=dirlevel)
 
-
-    fig1 = visualization_piechart(data_subset_time)
-    st.plotly_chart(fig1)
-
-    fig2 = visualization_stackedarea(data_subset_time, plottype="plotly")
-    st.plotly_chart(fig2)
-
-    fig3 = visualization_stackedarea_normalized(data_subset_time, plottype="plotly")
-    st.plotly_chart(fig3)
-
-
-
-import itertools
-from typing import List
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-
-from BatchLegal.bert_viz import *
+    try:
+        fig1 = visualization_piechart(data_subset_time)
+        st.plotly_chart(fig1)
+        fig2 = visualization_stackedarea(data_subset_time, plottype="plotly")
+        st.plotly_chart(fig2)
+        fig3 = visualization_stackedarea_normalized(data_subset_time, plottype="plotly")
+        st.plotly_chart(fig3)
+    except:
+        "Nothing to see here yet, please move on :)"
 
 if selected == "Model Output":
-
-    topics_dir1_df = pd.read_pickle('../raw_data/topics_dir1_df.pkl')
-    embeddings_lst = pd.read_pickle('../raw_data/embeddings_dir1.pkl')
-    distances_lst = pd.read_pickle('../raw_data/distances_dir1.pkl')
-
-    topic_list = topics_dir1_df['Sub_dir Name:'].tolist()
+    topic_list = topics_dir1_df['Sub_dir_name'].tolist() #Sub_dir Name:
     # pick topic
     theme = st.selectbox('Select subdirectory:', topic_list)
 
@@ -167,14 +161,6 @@ if selected == "Model Output":
         st.plotly_chart(visualize_hierarchy(topic_freq, get_topic, distances_lst[topic_list_index][dist]))
     except:
         st.write("Not enough topics to visualize")
-
-
-
-
-
-
-
-
 
 
 
