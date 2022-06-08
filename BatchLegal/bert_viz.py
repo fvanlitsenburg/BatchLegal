@@ -13,7 +13,7 @@ import plotly.figure_factory as ff
 
 def bert_bar(topic_freq, get_topic,
              topics: List[int] = None,
-             top_n_topics: int = 10,
+             top_n_topics: int = None,
              n_words: int = 5,
              width: int = 250,
              height: int = 250) -> go.Figure:
@@ -30,7 +30,7 @@ def bert_bar(topic_freq, get_topic,
   elif top_n_topics is not None:
       topics = sorted(freq_df.Topic.to_list()[:top_n_topics])
   else:
-      topics = sorted(freq_df.Topic.to_list()[0:6])
+      topics = sorted(freq_df.Topic.to_list())
 
   print(topics)
 
