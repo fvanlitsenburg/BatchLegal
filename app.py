@@ -64,7 +64,9 @@ st.set_page_config(
     layout="wide"
 )
 #  title
-st.title("BatchLegal")
+col1, col2, col3 = st.columns(3)
+with col2:
+    st.title("BatchLegal")
 
 # 1.2 Horizontal menu bar
 selected = option_menu(
@@ -75,7 +77,7 @@ selected = option_menu(
         default_index=0,
         orientation="horizontal",
         styles={
-        "container": {"width": "900px", "padding": "5!important", "background-color": "#fafafa"},
+        "container": {"width": "950px", "padding": "5!important", "background-color": "#fafafa"},
         "icon": {"color": "orange", "font-size": "25px"},
         "nav-link": {"font-size": "16px", "text-align": "left", "margin":"0px", "--hover-color": "#eee"},
         "nav-link-selected": {"background-color": "#02ab21"},
@@ -106,20 +108,19 @@ if selected == "EU Data Overview":
     # call function to display the top layer directories
     dir_1 = exploration_list_subdirs(data, dir_1=None, dir_2=None)
     # user input directory-level and keyword
-    columns = st.columns(2)
-    dir_1_selection = columns[0].selectbox('Select main directory', ["No Selection"] + dir_1)
+
+    dir_1_selection = st.sidebar.selectbox('Select main directory 📜', ["No Selection"] + dir_1)
     # call function again based on input
     dir_2 = exploration_list_subdirs(data, dir_1=dir_1_selection, dir_2=None)
     # user input for second layer directories
-    dir_2_selection = columns[1].selectbox('Select sub-directory', ["No Selection"] + dir_2)
+    dir_2_selection = st.sidebar.selectbox('Select sub-directory 📜', ["No Selection"] + dir_2)
 
     # select timeframe and sampling method
-    columns = st.columns(3)
-    start_date = columns[0].date_input("Start date 🗓:", datetime.date(2011, 1, 1))
+    start_date = st.sidebar.date_input("Start date 🗓:", datetime.date(2011, 1, 1))
     # columns[0].write(start_date)
-    end_date = columns[1].date_input("End date 📆:", datetime.date(2022, 12, 31))
+    end_date = st.sidebar.date_input("End date 📆:", datetime.date(2022, 12, 31))
     # columns[1].write(end_date)
-    time_selection = columns[2].selectbox('Per month or per year? ⌛️', ['Year', 'Month'])
+    time_selection = st.sidebar.selectbox('Time sampling by month or by year? ⌛️', ['Year', 'Month'])
     # columns[2].write(location)
     if time_selection == 'Year':
         timesampling = "Y"
@@ -141,15 +142,15 @@ if selected == "EU Data Overview":
 
     try:
         fig1 = visualization_barchart(data_subset_time)
-        st.plotly_chart(fig1)
+        st.plotly_chart(fig1, use_container_width=True)
 
         fig2 = visualization_stackedarea(data_subset_time, plottype="plotly")
-        st.plotly_chart(fig2)
+        st.plotly_chart(fig2, use_container_width=True)
 
         fig3 = visualization_stackedarea_normalized(data_subset_time, plottype="plotly")
-        st.plotly_chart(fig3)
+        st.plotly_chart(fig3, use_container_width=True)
     except:
-        st.write("Not enough data to visualise here.")
+        st.write("**Not enough data to visualise here.**")
 
 
 
@@ -161,7 +162,7 @@ from BatchLegal.bert_viz import *
 
 if selected == "Topic Modelling":
     dir_list = [1, 2, 3]
-    dir = st.selectbox('Select directory layer:', dir_list)
+    dir = st.sidebar.selectbox('Select directory layer:', dir_list)
 
 
     topics_dir1_df = get_topic(dir)
@@ -170,7 +171,7 @@ if selected == "Topic Modelling":
     else:
         topic_list = topics_dir1_df['Sub_dir_name'].tolist()
     # pick topic
-    theme = st.selectbox('Select subdirectory:', topic_list)
+    theme = st.sidebar.selectbox('Select subdirectory:', topic_list)
 
     temp = theme.split(' ')
     temp = temp[0].replace(',', '')
@@ -189,7 +190,7 @@ if selected == "Topic Modelling":
     embeddings_lst = get_emb(dir)
     distances_lst = get_dist(dir)
     if len(embeddings_lst[topic_list_index][embeds]) == 0:
-        st.write("Not enough topics to visualize")
+        st.write("**Not enough topics to visualize.**")
     else:
         st.plotly_chart(visualize_topics(topic_freq, topic_sizes, get_topic, embeddings_lst[topic_list_index][embeds]))
         st.plotly_chart(visualize_hierarchy(topic_freq, get_topic, distances_lst[topic_list_index][dist]))

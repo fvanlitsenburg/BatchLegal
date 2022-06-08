@@ -10,7 +10,7 @@ def load_metadata_for_vis(filename):
     data['date'] = pd.to_datetime(data['date'])
     data = data[~data["dir_1"].isna()].reset_index().drop(columns = "index") # drop rows that have NA in dir_1 column
     return data
-    
+
 def exploration_histogram(data):
     fig = plt.figure(figsize=(12,7))
     return sns.histplot(data['date'], bins = 50)
@@ -31,7 +31,7 @@ def exploration_list_subdirs(data, dir_1=None, dir_2=None):
     elif np.logical_and(dir_1 != None, dir_2 == None):
         print(f"subdirectories of dir_1: {dir_1}")
         return list(data[data['dir_1'] == dir_1]['dir_2'].value_counts().index)
-    else: 
+    else:
         print(f"subdirectories of dir_2: {dir_2}")
         return list(data[data['dir_2'] == dir_2]['dir_3'].value_counts().index)
 
@@ -66,7 +66,7 @@ def subset_data(data, start_date="2011-01-01", end_date="2021-12-31", timesampli
     # categories (dir_1) in descending frequencies
     dir_index = data[directory_code].value_counts().index
     #create dataframe for the others to append to and rename col to dir name
-    try:   
+    try:
         df = data_subset[data_subset[directory_code] == dir_index[0]].resample(timesampling, on='date')['title'].count().reset_index().rename(columns={'title':dir_index[0]})
     except IndexError:
         print("No Sub-Directories for this Keyword")
@@ -92,10 +92,10 @@ def visualization_barchart(data_publications):
     Comparison of Directory Frequency in Bar Chart
     '''
     bardata = data_publications.drop(columns='date').sum().reset_index().sort_values(by=0)
-    fig = px.bar(bardata, x=0, y='index', text_auto='.2s', orientation='h', 
+    fig = px.bar(bardata, x=0, y='index', text_auto='.2s', orientation='h',
                     labels={"0": "Number of Publications",
                             "index": "Directory"},
-                            title='Directories of published documents')
+                            title='<b>Directories of published documents</b>')
     return fig #.show()
 
 def visualization_stackedarea(data_publications, plottype="plotly"):
@@ -103,7 +103,7 @@ def visualization_stackedarea(data_publications, plottype="plotly"):
     stacked area plot in either plotly (interactive) or matplotlib
     '''
     # prepare data
-    x = data_publications['date'].tolist() 
+    x = data_publications['date'].tolist()
     y = data_publications.drop(columns = {"date"}).T.values.tolist()
     labels = data_publications.drop(columns = {"date"})
     # matplotlib
@@ -114,7 +114,7 @@ def visualization_stackedarea(data_publications, plottype="plotly"):
         plt.xlabel("Date of Publication")
         plt.ylabel("Number of Publications")
         plt.title(f"Publication of EU-Regulations per Directory (stacked)")
-        return plt#.show()  
+        return plt#.show()
     # plotly
     elif plottype == "plotly":
         # create dict for the labels in plotly
@@ -128,24 +128,24 @@ def visualization_stackedarea(data_publications, plottype="plotly"):
                       labels={"x": "Date of Publication",
                              "value": "Number of Publications",
                              "variable": "Category"},
-                      title='Publication of EU-Regulations per Directory (stacked)')
+                      title='<b>Publication of EU-Regulations per Directory (stacked)</b>')
         fig.for_each_trace(lambda t: t.update(name = newnames[t.name],
                                               legendgroup = newnames[t.name],
                                               hovertemplate = t.hovertemplate.replace(t.name, newnames[t.name])))
         return fig#.show()
     else:
         return "please select either 'matplotlib' or 'plotly' as plottype"
-    
+
 def visualization_stackedarea_normalized(data_publications, plottype="plotly"):
     '''
     normalized stacked area plot in either plotly (interactive) or matplotlib
     '''
-    #normalize 
+    #normalize
     df = data_publications.drop(columns = {'date'})
     data_publications_normalized = df.div(df.sum(axis=1), axis=0)
     y_norm = data_publications_normalized.T.values.tolist()
     # prepare data
-    x_norm = data_publications['date'].tolist() 
+    x_norm = data_publications['date'].tolist()
     labels = data_publications.drop(columns = {"date"})
     # matplotlib
     if plottype == "matplotlib":
@@ -168,15 +168,15 @@ def visualization_stackedarea_normalized(data_publications, plottype="plotly"):
               labels={"x": "Date of Publication",
                      "value": "Share of Publications in this Directory",
                      "variable": "Category"},
-              title='Publication of EU-Regulations per Directory (stacked and normalized)')
+              title='<b>Publication of EU-Regulations per Directory (stacked and normalized)</b>')
         fig.for_each_trace(lambda t: t.update(name = newnames[t.name],
                                               legendgroup = newnames[t.name],
                                               hovertemplate = t.hovertemplate.replace(t.name, newnames[t.name])))
         return fig#.show()
     else:
         return "please select either 'matplotlib' or 'plotly' as plottype"
-    
-    
+
+
 if __name__ == "__main__":
     filename = "../raw_data/20220602.csv"
     data = load_metadata_for_vis(filename)
