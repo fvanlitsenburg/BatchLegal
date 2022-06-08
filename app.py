@@ -161,36 +161,52 @@ from plotly.subplots import make_subplots
 from BatchLegal.bert_viz import *
 
 if selected == "Topic Modelling":
-    dir_list = [1, 2, 3]
-    dir = st.sidebar.selectbox('Select directory layer:', dir_list)
+    dir_list = ['- Agriculture', '--- Fresh fruit and vegetables', '--- Milk products', '--- Oils and fats', '--- Sugar', '--- Wine', '-- Agricultural structural funds', '--- European Agricultural Guarantee Fund', '-- Agricultural structures', '--- Social and structural measures', '-- Statistics', '--- Arrangements covering more than one market organisation', '* Area of freedom, security and justice', '--- Crossing external borders', '--- Origin of goods', '-- Police and judicial cooperation in criminal and customs matters', '-- Programmes', '- Competition policy', '- Customs Union and free movement of goods', '-- Application of the Common Customs Tariff', '--- Tariff classification', '-- General', '-- General customs rules', '--- Common customs territory', '* Economic and monetary policy and free movement of capital', '--- Institutional economic provisions', '--- Instruments of economic policy', '* Energy', '-- Electricity', '-- General principles and programmes', '--- Rational utilisation and conservation of energy', '- Environment, consumers and health protection', '--- Pollution and nuisances', '--- Space, environment and natural resources', '-- Consumers', '--- Consumer information, education and representation', '--- Protection of economic interests', '-- Health protection', '- External relations', '-- Bilateral agreements with non-member countries ', '-- Commercial policy', '--- Other commercial policy measures', '--- Trade arrangements', '-- Development policy', '--- Generalised system of preferences', '-- External relations', '* Fisheries', '--- Agreements with non-member countries', '--- Market organisation', '--- Structural measures', '* Freedom of movement for workers and social policy', '-- Social policy', '--- General social provisions', '- General, financial and institutional matters', '-- Financial and budgetary provisions', '-- Provisions governing the institutions', '- Industrial policy and internal market', '-- Industrial policy: general, programmes, statistics and research', '-- Industrial policy: sectoral operations', '--- Information technology, telecommunications and data-processing', '-- Internal market: approximation of laws', '--- Agricultural and forestry tractors', '--- Dangerous substances', '--- Motor vehicles', '--- Plant health', '--- Proprietary medicinal products', '* Law relating to undertakings', '-- Judicial cooperation in civil matters', '- Regional policy and coordination of structural instruments', '-- Coordination of structural instruments', '-- Dissemination of information', '- Taxation', '- Transport policy', '--- Market operation', '-- Air transport', '--- Air safety', '-- Shipping']
+    theme = st.selectbox('Select directory:', dir_list)
 
-
-    topics_dir1_df = get_topic(dir)
-    topic_list = topics_dir1_df['Sub_dir_name'].tolist()
-    # pick topic
-    theme = st.sidebar.selectbox('Select subdirectory:', topic_list)
-
-    temp = theme.split(' ')
-    temp = temp[0].replace(',', '')
-    embeds = temp+'_embeds'
-    dist = temp+'_dist'
-
-    topic_list_index = topic_list.index(theme)
-    topic_freq = topics_dir1_df.iloc[topic_list_index]['topic_freq']
-    get_topic = topics_dir1_df.iloc[topic_list_index]['get_topic']
-    topic_sizes = topics_dir1_df.iloc[topic_list_index]['topic_sizes']
-
-
-
-    st.plotly_chart(bert_bar(topic_freq, get_topic))
-
-    embeddings_lst = get_emb(dir)
-    distances_lst = get_dist(dir)
-    if len(embeddings_lst[topic_list_index][embeds]) == 0:
-        st.write("**Not enough topics to visualize.**")
+    if theme[0:4] == '--- ':
+        theme = theme[4:]
+        dir = 3
+        validtheme = True
+    elif theme[0:3] == '-- ':
+        theme = theme[3:]
+        dir = 2
+        validtheme = True
+    elif theme[0:2] == '* ':
+        validtheme = False
     else:
-        st.plotly_chart(visualize_topics(topic_freq, topic_sizes, get_topic, embeddings_lst[topic_list_index][embeds]))
-        st.plotly_chart(visualize_hierarchy(topic_freq, get_topic, distances_lst[topic_list_index][dist]))
+        theme = theme[2:]
+        dir = 1
+        validtheme = True
+
+    if validtheme == True:
+
+        temp = theme.split(' ')
+        temp = temp[0].replace(',', '')
+        embeds = temp+'_embeds'
+        dist = temp+'_dist'
+
+        topics_dir1_df = get_topic(dir)
+        topic_list = topics_dir1_df['Sub_dir_name'].tolist()
+
+        topic_list_index = topic_list.index(theme)
+        topic_freq = topics_dir1_df.iloc[topic_list_index]['topic_freq']
+        get_topic = topics_dir1_df.iloc[topic_list_index]['get_topic']
+        topic_sizes = topics_dir1_df.iloc[topic_list_index]['topic_sizes']
+
+
+
+        st.plotly_chart(bert_bar(topic_freq, get_topic), use_container_width=True)
+
+        embeddings_lst = get_emb(dir)
+        distances_lst = get_dist(dir)
+        if len(embeddings_lst[topic_list_index][embeds]) == 0:
+            st.write("Not enough topics to visualize")
+        else:
+            st.plotly_chart(visualize_topics(topic_freq, topic_sizes, get_topic, embeddings_lst[topic_list_index][embeds]), use_container_width=True)
+            st.plotly_chart(visualize_hierarchy(topic_freq, get_topic, distances_lst[topic_list_index][dist]), use_container_width=True)
+    else:
+        st.write("Not enough data to visualise. Please select another (sub)directory.")
 
 
 if selected == "Contact":
