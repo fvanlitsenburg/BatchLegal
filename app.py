@@ -149,7 +149,7 @@ if selected == "Model Output":
 
 
 
-    topic_list = topics_dir1_df['Sub_dir_name:'].tolist()   # V1 Sub_dir Name
+    topic_list = topics_dir1_df['Sub_dir_name'].tolist()   # V1 Sub_dir Name:
     # pick topic
     theme = st.selectbox('Select subdirectory:', topic_list)
 
