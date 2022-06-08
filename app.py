@@ -166,10 +166,7 @@ if selected == "Topic Modelling":
 
 
     topics_dir1_df = get_topic(dir)
-    if dir == 1:
-        topic_list = topics_dir1_df['Sub_dir Name:'].tolist()   # V1 Sub_dir Name:
-    else:
-        topic_list = topics_dir1_df['Sub_dir_name'].tolist()
+    topic_list = topics_dir1_df['Sub_dir_name'].tolist()
     # pick topic
     theme = st.sidebar.selectbox('Select subdirectory:', topic_list)
 
