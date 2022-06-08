@@ -87,6 +87,17 @@ def visualization_piechart(data_publications):
     fig = px.pie(piedata, values=0, names='index', title='Directories of published documents')
     return fig#.show()
 
+def visualization_barchart(data_publications):
+    '''
+    Comparison of Directory Frequency in Bar Chart
+    '''
+    bardata = data_publications.drop(columns='date').sum().reset_index().sort_values(by=0)
+    fig = px.bar(bardata, x=0, y='index', text_auto='.2s', orientation='h', 
+                    labels={"0": "Number of Publications",
+                            "index": "Directory"},
+                            title='Directories of published documents')
+    return fig #.show()
+
 def visualization_stackedarea(data_publications, plottype="plotly"):
     '''
     stacked area plot in either plotly (interactive) or matplotlib
