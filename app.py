@@ -14,6 +14,26 @@ import pickle
 
 from BatchLegal.visualization_descriptive import *
 
+url = "https://drive.google.com/file/d/1IUcEktP1RHDnnTcl4M5_QIL2sSNwVW3r/view?usp=sharing"
+
+path = 'https://drive.google.com/uc?export=download&id='+url.split('/')[-2]
+data = pd.read_csv(path)
+
+# url_top = "https://drive.google.com/file/d/1DLVflFOzf30kOKzNiktVSCrCnY5EmlNm/view?usp=sharing"
+url_top = "https://drive.google.com/file/d/1zL5vEA77S4ugZP2HNY69N4vdroqd3XRJ/view?usp=sharing"
+path_top = 'https://drive.google.com/uc?export=download&id='+url_top.split('/')[-2]
+topics_dir1_df = pd.read_pickle(path_top)
+# url_emb = "https://drive.google.com/file/d/1dG5nxr_lLuFjjLtYu8hki9Im6PK91XR-/view?usp=sharing"
+url_emb = "https://drive.google.com/file/d/1FFMMaqvrSkiGX-2HgM08iVSt6ZkzAafv/view?usp=sharing"
+path_emb = "https://drive.google.com/uc?export=download&id="+url_emb.split('/')[-2]
+embeddings_lst = pd.read_pickle(path_emb)
+
+
+# url_dist = "https://drive.google.com/file/d/1uAQKY7ovlqGRl1Zobd_GNdrXPR9aQkZO/view?usp=sharing"
+url_dist = "https://drive.google.com/file/d/1LOub6h0nnmOxMM8aIrWZGdnIbO3-JmjJ/view?usp=sharing"
+path_dist = "https://drive.google.com/uc?export=download&id="+url_dist.split('/')[-2]
+distances_lst = pd.read_pickle(path_dist)
+
 st.set_page_config(
     page_title = "BatchLegal",
     page_icon="⚖️",
@@ -55,9 +75,6 @@ if selected == "Home":
 
 # descriptive visualization of metadata
 if selected == "Visualisations":
-    url = "https://drive.google.com/file/d/1IUcEktP1RHDnnTcl4M5_QIL2sSNwVW3r/view?usp=sharing"
-    path = 'https://drive.google.com/uc?export=download&id='+url.split('/')[-2]
-    data = pd.read_csv(path)
     data['date'] = pd.to_datetime(data['date'])
     data = data[~data["dir_1"].isna()].reset_index().drop(columns = "index") # drop rows that have NA in dir_1 column
 
@@ -97,15 +114,17 @@ if selected == "Visualisations":
     # subsetting for time
     data_subset_time = subset_data(data_subset, start_date=str(start_date), end_date=str(end_date), timesampling=timesampling, directory_level=dirlevel)
 
+    try:
+        fig1 = visualization_piechart(data_subset_time)
+        st.plotly_chart(fig1)
 
-    fig1 = visualization_piechart(data_subset_time)
-    st.plotly_chart(fig1)
+        fig2 = visualization_stackedarea(data_subset_time, plottype="plotly")
+        st.plotly_chart(fig2)
 
-    fig2 = visualization_stackedarea(data_subset_time, plottype="plotly")
-    st.plotly_chart(fig2)
-
-    fig3 = visualization_stackedarea_normalized(data_subset_time, plottype="plotly")
-    st.plotly_chart(fig3)
+        fig3 = visualization_stackedarea_normalized(data_subset_time, plottype="plotly")
+        st.plotly_chart(fig3)
+    except:
+        st.write("Nothing to see here yet, please move on :)")
 
 
 
@@ -116,23 +135,21 @@ from plotly.subplots import make_subplots
 from BatchLegal.bert_viz import *
 
 if selected == "Model Output":
-    url_top = "https://drive.google.com/file/d/1DLVflFOzf30kOKzNiktVSCrCnY5EmlNm/view?usp=sharing"
-    path_top = 'https://drive.google.com/uc?export=download&id='+url_top.split('/')[-2]
-    topics_dir1_df = pd.read_pickle(path_top)
-    url_emb = "https://drive.google.com/file/d/1dG5nxr_lLuFjjLtYu8hki9Im6PK91XR-/view?usp=sharing"
-    path_emb = "https://drive.google.com/uc?export=download&id="+url_emb.split('/')[-2]
-    embeddings_lst = pd.read_pickle(path_emb)
-    # with open(path_emb, 'rb') as handle:
-    #     embeddings_lst = pickle.load(handle)
-
-    url_dist = "https://drive.google.com/file/d/1uAQKY7ovlqGRl1Zobd_GNdrXPR9aQkZO/view?usp=sharing"
-    path_dist = "https://drive.google.com/uc?export=download&id="+url_dist.split('/')[-2]
-    distances_lst = pd.read_pickle(path_dist)
-    # with open(path_dist, 'rb') as handle:
-    #     distances_lst = pickle.load(handle)
+    # url_top = "https://drive.google.com/file/d/1DLVflFOzf30kOKzNiktVSCrCnY5EmlNm/view?usp=sharing"
+    # path_top = 'https://drive.google.com/uc?export=download&id='+url_top.split('/')[-2]
+    # topics_dir1_df = pd.read_pickle(path_top)
+    # url_emb = "https://drive.google.com/file/d/1dG5nxr_lLuFjjLtYu8hki9Im6PK91XR-/view?usp=sharing"
+    # path_emb = "https://drive.google.com/uc?export=download&id="+url_emb.split('/')[-2]
+    # embeddings_lst = pd.read_pickle(path_emb)
 
 
-    topic_list = topics_dir1_df['Sub_dir Name:'].tolist()
+    # url_dist = "https://drive.google.com/file/d/1uAQKY7ovlqGRl1Zobd_GNdrXPR9aQkZO/view?usp=sharing"
+    # path_dist = "https://drive.google.com/uc?export=download&id="+url_dist.split('/')[-2]
+    # distances_lst = pd.read_pickle(path_dist)
+
+
+
+    topic_list = topics_dir1_df['Sub_dir_name:'].tolist()   # V1 Sub_dir Name
     # pick topic
     theme = st.selectbox('Select subdirectory:', topic_list)
 
