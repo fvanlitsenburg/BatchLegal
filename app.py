@@ -69,7 +69,7 @@ st.title("BatchLegal")
 # 1.2 Horizontal menu bar
 selected = option_menu(
         menu_title = None,
-        options=['Home', 'Visualisations', 'Model Output','Contact'],
+        options=['Home', 'EU Data Overview', 'Topic Modelling','Contact'],
         icons=["house", "bar-chart-fill","bar-chart-fill", "envelope"],
         menu_icon="cast",
         default_index=0,
@@ -98,7 +98,7 @@ if selected == "Home":
             ''')
 
 # descriptive visualization of metadata
-if selected == "Visualisations":
+if selected == "EU Data Overview":
     data = get_data()
     data['date'] = pd.to_datetime(data['date'])
     data = data[~data["dir_1"].isna()].reset_index().drop(columns = "index") # drop rows that have NA in dir_1 column
@@ -149,7 +149,7 @@ if selected == "Visualisations":
         fig3 = visualization_stackedarea_normalized(data_subset_time, plottype="plotly")
         st.plotly_chart(fig3)
     except:
-        st.write("Nothing to see here yet, please move on :)")
+        st.write("Not enough data to visualise here.")
 
 
 
@@ -159,9 +159,9 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from BatchLegal.bert_viz import *
 
-if selected == "Model Output":
+if selected == "Topic Modelling":
     dir_list = [1, 2, 3]
-    dir = st.selectbox('Select directory:', dir_list)
+    dir = st.selectbox('Select directory layer:', dir_list)
 
 
     topics_dir1_df = get_topic(dir)
