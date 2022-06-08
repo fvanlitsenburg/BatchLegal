@@ -14,7 +14,7 @@ import pickle
 from BatchLegal.visualization_descriptive import *
 
 ## Load data
-@st.cache()
+@st.cache(allow_output_mutation=True)
 def get_data():
     url = "https://drive.google.com/file/d/1IUcEktP1RHDnnTcl4M5_QIL2sSNwVW3r/view?usp=sharing"
     path = 'https://drive.google.com/uc?export=download&id='+url.split('/')[-2]
@@ -22,7 +22,7 @@ def get_data():
     return data
 
 # url_top = "https://drive.google.com/file/d/1DLVflFOzf30kOKzNiktVSCrCnY5EmlNm/view?usp=sharing"
-@st.cache()
+@st.cache(allow_output_mutation=True)
 def get_topic(dir = 1):
     if dir == 1:
         url_top = "https://drive.google.com/file/d/1DLVflFOzf30kOKzNiktVSCrCnY5EmlNm/view?usp=sharing"
@@ -34,7 +34,7 @@ def get_topic(dir = 1):
     topics_dir_df = pd.read_pickle(path_top)
     return topics_dir_df
 
-@st.cache()
+@st.cache(allow_output_mutation=True)
 def get_emb(dir = 1):
     if dir == 1:
         url_emb = "https://drive.google.com/file/d/1dG5nxr_lLuFjjLtYu8hki9Im6PK91XR-/view?usp=sharing"
@@ -46,7 +46,7 @@ def get_emb(dir = 1):
     embeddings_lst = pd.read_pickle(path_emb)
     return embeddings_lst
 
-@st.cache()
+@st.cache(allow_output_mutation=True)
 def get_dist(dir = 1):
     if dir == 1:
         url_dist = "https://drive.google.com/file/d/1uAQKY7ovlqGRl1Zobd_GNdrXPR9aQkZO/view?usp=sharing"
@@ -165,7 +165,10 @@ if selected == "Model Output":
 
 
     topics_dir1_df = get_topic(dir)
-    topic_list = topics_dir1_df['Sub_dir_name'].tolist()   # V1 Sub_dir Name:
+    if dir == 1:
+        topic_list = topics_dir1_df['Sub_dir Name:'].tolist()   # V1 Sub_dir Name:
+    else:
+        topic_list = topics_dir1_df['Sub_dir_name'].tolist()
     # pick topic
     theme = st.selectbox('Select subdirectory:', topic_list)
 
