@@ -1,17 +1,10 @@
 import streamlit as st
-from streamlit_option_menu import option_menu
-import streamlit.components.v1 as html
-from  PIL import Image
 import numpy as np
 import pandas as pd
-import plotly.figure_factory as ff
-import plotly.graph_objects as go
-import matplotlib.pyplot as plt
-import seaborn as sns
-import plotly.express as px
 import datetime
-import pickle
+from streamlit_option_menu import option_menu
 from BatchLegal.visualization_descriptive import *
+from BatchLegal.bert_viz import *
 
 ## Load data
 @st.cache(allow_output_mutation=True)
@@ -21,7 +14,6 @@ def get_data():
     data = pd.read_csv(path)
     return data
 
-# url_top = "https://drive.google.com/file/d/1DLVflFOzf30kOKzNiktVSCrCnY5EmlNm/view?usp=sharing"
 @st.cache(allow_output_mutation=True)
 def get_topic(dir = 1):
     if dir == 1:
@@ -153,14 +145,6 @@ if selected == "EU Data Overview":
     except:
         st.write("**Not enough data to visualise here.**")
 
-
-
-import itertools
-from typing import List
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-from BatchLegal.bert_viz import *
-
 if selected == "Topic Modelling":
     dir_list = ['- Agriculture', '--- Fresh fruit and vegetables', '--- Milk products', '--- Oils and fats', '--- Sugar', '--- Wine', '-- Agricultural structural funds', '--- European Agricultural Guarantee Fund', '--- Social and structural measures', '-- Statistics', '--- Arrangements covering more than one market organisation', '* Area of freedom, security and justice', '--- Crossing external borders', '--- Origin of goods', '-- Police and judicial cooperation in criminal and customs matters', '-- Programmes', '- Competition policy', '- Customs Union and free movement of goods', '-- Application of the Common Customs Tariff', '--- Tariff classification', '-- General', '-- General customs rules', '--- Common customs territory', '* Economic and monetary policy and free movement of capital', '--- Institutional economic provisions', '--- Instruments of economic policy', '* Energy', '-- Electricity', '-- General principles and programmes', '--- Rational utilisation and conservation of energy', '- Environment, consumers and health protection', '--- Pollution and nuisances', '--- Space, environment and natural resources', '-- Consumers', '--- Consumer information, education and representation', '--- Protection of economic interests', '-- Health protection', '- External relations', '-- Bilateral agreements with non-member countries ', '-- Commercial policy', '--- Other commercial policy measures', '--- Trade arrangements', '-- Development policy', '--- Generalised system of preferences', '-- External relations', '* Fisheries', '--- Agreements with non-member countries', '--- Market organisation', '--- Structural measures', '* Freedom of movement for workers and social policy', '-- Social policy', '--- General social provisions', '- General, financial and institutional matters', '-- Financial and budgetary provisions', '-- Provisions governing the institutions', '- Industrial policy and internal market', '-- Industrial policy: general, programmes, statistics and research', '-- Industrial policy: sectoral operations', '--- Information technology, telecommunications and data-processing', '-- Internal market: approximation of laws', '--- Agricultural and forestry tractors', '--- Dangerous substances', '--- Motor vehicles', '--- Plant health', '--- Proprietary medicinal products', '* Law relating to undertakings', '-- Judicial cooperation in civil matters', '- Regional policy and coordination of structural instruments', '-- Coordination of structural instruments', '-- Dissemination of information', '- Taxation', '- Transport policy', '--- Market operation', '-- Air transport', '--- Air safety', '-- Shipping']
     theme = st.sidebar.selectbox('Select directory:', dir_list)
@@ -185,6 +169,8 @@ if selected == "Topic Modelling":
 
     if validtheme == True:
 
+        st.write(f"Selected directory: **{theme}**")
+
         temp = theme.split(' ')
         temp = temp[0].replace(',', '')
         embeds = temp+'_embeds'
@@ -197,8 +183,6 @@ if selected == "Topic Modelling":
         topic_freq = topics_dir1_df.iloc[topic_list_index]['topic_freq']
         get_topic = topics_dir1_df.iloc[topic_list_index]['get_topic']
         topic_sizes = topics_dir1_df.iloc[topic_list_index]['topic_sizes']
-
-
 
         st.plotly_chart(bert_bar(topic_freq, get_topic), use_container_width=True)
 
