@@ -169,8 +169,6 @@ if selected == "Topic Modelling":
 
     if validtheme == True:
 
-        st.write(f"Selected directory: **{theme}**")
-
         temp = theme.split(' ')
         temp = temp[0].replace(',', '')
         embeds = temp+'_embeds'
