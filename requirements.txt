@@ -6,7 +6,6 @@ pandas
 matplotlib
 seaborn
 scikit-learn
-bertopic
 typing
 streamlit
 requests
