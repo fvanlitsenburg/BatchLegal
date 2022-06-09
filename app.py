@@ -80,15 +80,25 @@ if selected == "Home":
     # st.title(f"You have selected {selected} directory.")
     st.sidebar.empty()
     st.markdown('''
-            # Wondering what is going within EU regulations?  \n
-            ## Our App **BatchLegal** will give you an overview! _Cool_? ✅  \n
-            With the help of the following 2️⃣ topic modelling algorithms we are able to grasp the most important topics of legal texts.
+            # Insight into EU regulations  \n
+            ### EU regulations \n
+            - The EU publishes thousands regulations per year
+            - These are organised into directories and by themes
+            - Often, however, the directories do not provide enough granularity. We would like to know *in more detail* what is going on! \n\n
+
+            ### Topic modelling and EUR-Lex
+            - We have retrieved data from EUR-Lex and applied *topic modelling* to it
+            - At any granular directory level (e.g. Consumer information, education and representation) with enough regulation, we use machine learning to give us an idea of the topics
+            - For example, within Consumer information etc. we see very clearly that there are topics about DOC and about correct claims about e.g. infant formula
+
+
             ''')
     st.markdown('''
-            ## BERTopic ❓ \n
-            🔘 leverages transformers and c-TF-IDF to create dense clusters  \n
-            🔘 allows for easily interpretable topics  \n
-            🔘 keeping important words in the topic descriptions.  \n
+            ### BERTopic ❓ \n
+            - we used BERTopic (https://github.com/MaartenGr/BERTopic/) for topic modeling and as basis for our visualisation \n
+            - leverages transformers and c-TF-IDF to create dense clusters  \n
+            - allows for easily interpretable topics  \n
+            - keeping important words in the topic descriptions.  \n
             # 🏁
             ''')
 
