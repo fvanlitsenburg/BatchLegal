@@ -6,7 +6,6 @@ pandas
 matplotlib
 seaborn
 scikit-learn
-string
 nltk
 spacy
 spacy-lookup-data
