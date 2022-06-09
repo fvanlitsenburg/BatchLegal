@@ -174,11 +174,14 @@ if selected == "Topic Modelling":
         dir = 2
         validtheme = True
     elif theme[0:2] == '* ':
+        theme = theme[2:]
         validtheme = False
     else:
         theme = theme[2:]
         dir = 1
         validtheme = True
+
+    st.write(f"Selected directory: **{theme}**")
 
     if validtheme == True:
 
