@@ -166,6 +166,8 @@ if selected == "Topic Modelling":
 
     if validtheme == True:
 
+        st.write(f"Selected directory: **{theme}**")
+
         temp = theme.split(' ')
         temp = temp[0].replace(',', '')
         embeds = temp+'_embeds'
@@ -178,8 +180,6 @@ if selected == "Topic Modelling":
         topic_freq = topics_dir1_df.iloc[topic_list_index]['topic_freq']
         get_topic = topics_dir1_df.iloc[topic_list_index]['get_topic']
         topic_sizes = topics_dir1_df.iloc[topic_list_index]['topic_sizes']
-
-
 
         st.plotly_chart(bert_bar(topic_freq, get_topic), use_container_width=True)
 
