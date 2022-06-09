@@ -1,7 +1,6 @@
 pytest
 pylint
 ipdb
-jupyterlab
 numpy
 pandas
 matplotlib
