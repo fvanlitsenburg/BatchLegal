@@ -14,7 +14,7 @@ import plotly.figure_factory as ff
 def bert_bar(topic_freq, get_topic,
              topics: List[int] = None,
              top_n_topics: int = None,
-             n_words: int = 5,
+             n_words: int = 8,
              width: int = 250,
              height: int = 250) -> go.Figure:
 
