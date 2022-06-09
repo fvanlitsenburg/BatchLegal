@@ -6,7 +6,12 @@ pandas
 matplotlib
 seaborn
 scikit-learn
+string
+nltk
 spacy
+spacy-lookup-data
+bertopic
+typing
 streamlit
 requests
 beautifulsoup4
