@@ -86,7 +86,7 @@ selected = option_menu(
 
 if selected == "Home":
     # st.title(f"You have selected {selected} directory.")
-    st.sidebar()
+    st.sidebar.empty()
     st.markdown('''
             # Wondering what is going within EU regulations?  \n
             ## Our App **BatchLegal** will give you an overview! _Cool_? ✅  \n
@@ -211,7 +211,7 @@ if selected == "Topic Modelling":
 
 
 if selected == "Contact":
-    st.sidebar()
+    st.sidebar.empty()
     st.title(selected)
     st.write("Creators:  \n Axel Pichler  \n Jakob Gübel  \n Felix van Litsenburg  \n Christopher Peter")
 
